@@ -4,6 +4,7 @@ let generatedPack=[];
 let scenarioDrawn={"Катастрофа":[],"Угроза":[],"Преимущества бункера":[]};
 let bonusCandidate=null;
 let transferMode=null;
+let recentlyDrawn={"Профессия":[],"Факт":[]};
 const shuffle=(a)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
 const escapeHTML=(s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function showView(view){$("#home-view").classList.toggle("hidden",view!=="home");$("#catalog-view").classList.toggle("hidden",view!=="catalog");document.querySelectorAll(".nav-link").forEach(b=>b.classList.toggle("active",b.dataset.view===view));if(view==="catalog")renderCatalog()}
@@ -36,14 +37,14 @@ function factConflict(a,b){
  const common=[...aa].filter(x=>bb.has(x)).length;
  return common>=2&&common/Math.max(1,Math.min(aa.size,bb.size))>=0.5;
 }
-function takeOne(pool,category,exclude=[]){const choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category&&!exclude.some(e=>category==="Факт"&&factConflict(e,x.c)));if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
+function takeOne(pool,category,exclude=[]){let choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category&&!exclude.some(e=>category==="Факт"?factConflict(e,x.c):e.title===x.c.title));if(!choices.length&&category==="Профессия")choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category);if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
 function generatePack(nextSetting){
  setting=nextSetting;
  bonusCandidate=null;
  document.querySelectorAll("[data-generate-setting]").forEach(b=>b.classList.toggle("selected",b.dataset.generateSetting===setting));
  const pool=shuffle(window.BUNKER_CARDS[setting].filter(g=>g.category!=="Катастрофа"&&g.category!=="Угроза"&&g.category!=="Преимущества бункера").flatMap(g=>g.items.flatMap(card=>Array.from({length:Math.max(1,card.copies||1)},(_,i)=>({...card,category:g.category,copyIndex:i+1})))));
  const needs=["Пол и возраст","Здоровье","Профессия","Хобби","Факт","Факт","Особое условие","Лёгкий багаж","Тяжёлый багаж"];
- generatedPack=[];for(const category of needs){const picked=takeOne(pool,category,category==="Факт"?generatedPack.filter(c=>c.category==="Факт"):[]);if(picked)generatedPack.push(picked)}
+ generatedPack=[];for(const category of needs){const exclude=category==="Факт"?[...recentlyDrawn["Факт"],...generatedPack.filter(c=>c.category==="Факт")]:category==="Профессия"?recentlyDrawn["Профессия"]:[];const picked=takeOne(pool,category,exclude);if(picked){generatedPack.push(picked);if(category==="Факт"||category==="Профессия"){recentlyDrawn[category].push(picked);recentlyDrawn[category]=recentlyDrawn[category].slice(category==="Факт"?-8:-6)}}}
  scenarioDrawn={"Катастрофа":[],"Угроза":[],"Преимущества бункера":[]};
  renderPack();renderScenario();
  $("#generated-pack").scrollIntoView({behavior:"smooth",block:"nearest"});
