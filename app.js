@@ -28,6 +28,7 @@ function renderPack(){
  $("#reroll-pack").addEventListener("click",()=>generatePack(setting));
 }
 document.querySelectorAll(".scenario-draw").forEach(b=>b.addEventListener("click",()=>drawScenario(b.dataset.scenario)));
+document.querySelectorAll(".scenario-reroll-button").forEach(b=>b.addEventListener("click",()=>rerollScenario(b.dataset.rerollScenario)));
 function drawScenario(category){
  const limits={"Катастрофа":1,"Угроза":2,"Преимущества бункера":3};
  const drawn=scenarioDrawn[category];if(drawn.length>=limits[category])return;
@@ -46,7 +47,8 @@ function renderScenario(){
    return '<article class="scenario-result-card"><span>'+escapeHTML(category.toUpperCase())+'</span><h3>'+escapeHTML(card.title)+'</h3><p>'+escapeHTML(card.description)+'</p>'+extra+'</article>';
   }).join("")+'</div></div>';
  }).join("")||'<p class="scenario-empty">Пока ничего не раскрыто. Нажмите кнопку нужной колоды.</p>';
- document.querySelectorAll("[data-reroll-scenario]").forEach(b=>b.addEventListener("click",()=>rerollScenario(b.dataset.rerollScenario)));document.querySelectorAll(".scenario-draw").forEach(b=>{
+ document.querySelectorAll(".scenario-reroll").forEach(b=>b.addEventListener("click",()=>rerollScenario(b.dataset.rerollScenario)));document.querySelectorAll(".scenario-reroll-button").forEach(b=>{b.disabled=!scenarioDrawn[b.dataset.rerollScenario].length});
+ document.querySelectorAll(".scenario-draw").forEach(b=>{
   const category=b.dataset.scenario,limit={"Катастрофа":1,"Угроза":2,"Преимущества бункера":3}[category],count=scenarioDrawn[category].length;
   b.disabled=count>=limit;
   b.textContent=count>=limit?"Колода раскрыта":category==="Катастрофа"?"Открыть катастрофу":category==="Угроза"?"Показать угрозу · "+(count+1)+"/"+limit:"Показать преимущество · "+(count+1)+"/"+limit;
