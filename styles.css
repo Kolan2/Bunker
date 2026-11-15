@@ -54,3 +54,4 @@
 @media(max-width:760px){.catalog-world-picker{grid-template-columns:1fr 1fr}.catalog-world-option{font-size:10px;padding:0 6px}}
 
 .scenario-result-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.scenario-result-heading .eyebrow{margin:0}.scenario-reroll{padding:8px 12px;font-size:9px}@media(max-width:760px){.scenario-result-heading{align-items:stretch;flex-direction:column}.scenario-reroll{width:100%}}
+.scenario-reroll-button{width:100%;margin-top:2px;padding:10px 8px;font-size:10px}.scenario-reroll-button:disabled{opacity:.35;cursor:not-allowed}
