@@ -1745,3 +1745,28 @@ for(const world of Object.keys(SPECIAL_RULE_PATCH)){
  for(const card of group.items){const patch=SPECIAL_RULE_PATCH[world][card.title];if(patch){card.action=patch[0];card.description=patch[1];}}
 }
 
+for(const world of Object.keys(window.BUNKER_CARDS)){
+ const professionGroup=window.BUNKER_CARDS[world].find(g=>g.category==="Профессия");
+ professionGroup.items.forEach(card=>card.copies=1);
+ const removeTitles=world==="modern"?["Механик по дизельным двигателям"]:["Караванный проводник"];
+ professionGroup.items=professionGroup.items.filter(card=>!removeTitles.includes(card.title));
+ professionGroup.items.forEach((card,i)=>{card.id=world+"-profession-final-"+(i+1)});
+}
+const SPECIAL_VARIANT_PATCH={
+ modern:{
+ "Неприкосновенность":["Перехват инициативы","extra-vote","Один раз до голосования получите дополнительный голос. Назовите его цель одновременно со своим обычным голосом; ведущий учитывает оба голоса как ваши."],
+ "Кража припасов":["Смена специальности","swap-profession","Выберите игрока и поменяйтесь с ним картами профессии. Ведущий переносит обе карты между наборами; новые навыки действуют сразу, но требуют подходящих инструментов."],
+ "Перехват багажа":["Налог на припасы","steal-baggage","Выберите игрока: он передаёт вам одну карту лёгкого багажа на выбор ведущего. Ведущий переносит её из его набора в ваш; если такой карты нет, эффект не срабатывает."]
+ },
+ fantasy:{
+ "Печать неприкосновенности":["Знамение изгнания","reveal-fact","До голосования тайно назовите ведущему игрока. Если он получает больше всего голосов, ведущий раскрывает один его закрытый факт до подсчёта и даёт группе полминуты на обсуждение."],
+ "Отъём поклажи":["Обмен трофеями","swap-baggage","Выберите игрока и одну свою карту багажа. Ведущий показывает его багаж; вы выбираете одну карту для обмена, после чего обе карты переходят между наборами."],
+ "Чтение судьбы":["Прорицание угроз","peek-threats","Посмотрите три верхние карты угрозы, выберите одну для немедленного раскрытия, остальные верните под низ колоды в выбранном порядке."],
+ "Защитная печать":["Печать молчания","silence-special","Выберите игрока: до конца следующего раунда он не может раскрывать закрытые карты или использовать особые условия, но может голосовать и быть выбранным."]
+ }
+};
+for(const world of Object.keys(SPECIAL_VARIANT_PATCH)){
+ const group=window.BUNKER_CARDS[world].find(g=>g.category==="Особое условие");
+ for(const card of group.items){const patch=SPECIAL_VARIANT_PATCH[world][card.title];if(patch){card.title=patch[0];card.action=patch[1];card.description=patch[2];}}
+}
+
