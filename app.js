@@ -2,6 +2,7 @@ const $ = (s)=>document.querySelector(s);
 let setting="modern";
 let generatedPack=[];
 let scenarioDrawn={"Катастрофа":[],"Угроза":[],"Преимущества бункера":[]};
+let bonusCandidate=null;
 const shuffle=(a)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
 const escapeHTML=(s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function showView(view){$("#home-view").classList.toggle("hidden",view!=="home");$("#catalog-view").classList.toggle("hidden",view!=="catalog");document.querySelectorAll(".nav-link").forEach(b=>b.classList.toggle("active",b.dataset.view===view));if(view==="catalog")renderCatalog()}
@@ -10,9 +11,34 @@ $("#show-catalog").addEventListener("click",()=>showView("catalog"));
 $("#create-room").addEventListener("click",()=>$("#generator-panel").scrollIntoView({behavior:"smooth",block:"center"}));
 document.querySelectorAll("[data-generate-setting]").forEach(b=>b.addEventListener("click",()=>generatePack(b.dataset.generateSetting)));
 function makeDeck(category){const group=window.BUNKER_CARDS[setting].find(g=>g.category===category);return group?group.items.flatMap(card=>Array.from({length:Math.max(1,card.copies||1)},(_,i)=>({...card,category,copyIndex:i+1}))):[]}
-function factConflict(a,b){const clean=s=>String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^а-яa-z0-9 ]/g," ").split(/\s+/).filter(Boolean);const A=clean(a.title),B=clean(b.title),roots=["осад","лавин","землетряс","портал","эпидем","чум"];if(roots.some(r=>A.some(x=>x.startsWith(r))&&B.some(x=>x.startsWith(r))))return true;const stop=new Set(["однажды","когда","то","был","была","имеет","умеет","знает","пережил","пережила","в","на","из","после","во","с","и"]);const aa=new Set(A.filter(x=>x.length>3&&!stop.has(x))),bb=new Set(B.filter(x=>x.length>3&&!stop.has(x)));const common=[...aa].filter(x=>bb.has(x)).length;return common>=2&&common/Math.max(1,Math.min(aa.size,bb.size))>=0.5}function takeOne(pool,category,exclude=[]){const choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category&&!exclude.some(e=>category==="Факт"&&factConflict(e,x.c)));if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
+function factConflict(a,b){
+ const clean=s=>String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^а-яa-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
+ const A=clean((a.title||"")+" "+(a.description||"")),B=clean((b.title||"")+" "+(b.description||""));
+ const themes=[
+  ["осад","осажд","блокад","крепостн","оборонял крепост"],
+  ["лавин","снежн обвал","сход снега"],
+  ["землетряс","подземн толч","сейсмич"],
+  ["портал","разлом","межмиров","планарн"],
+  ["эпидем","пандем","чум","заражени","инфекц"],
+  ["кораблекруш","потерпел кораблекруш","затонул корабл"],
+  ["отключени электр","без электрич","энергосистем"],
+  ["заблуд","потерялся","потерял ориентир"],
+  ["выжил в лес","лесную неделю","жил в лесу"],
+  ["долг гильд","должен гильд","книга долгов"],
+  ["чужое имя","настоящее имя","скрывает имя"],
+  ["дракон","грифон","василиск"]
+ ];
+ const has=(words,root)=>words.some(x=>x.includes(root));
+ for(const theme of themes)if(theme.some(root=>has(A,root))&&theme.some(root=>has(B,root)))return true;
+ const stop=new Set(["однажды","когда","то","был","была","было","были","имеет","умеет","знает","пережил","пережила","пережили","в","на","из","после","во","с","и","для","при","свой","свою","свои","несколько","один","одна","одну","среди","около","рядом"]);
+ const aa=new Set(A.filter(x=>x.length>3&&!stop.has(x))),bb=new Set(B.filter(x=>x.length>3&&!stop.has(x)));
+ const common=[...aa].filter(x=>bb.has(x)).length;
+ return common>=2&&common/Math.max(1,Math.min(aa.size,bb.size))>=0.5;
+}
+function takeOne(pool,category,exclude=[]){const choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category&&!exclude.some(e=>category==="Факт"&&factConflict(e,x.c)));if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
 function generatePack(nextSetting){
  setting=nextSetting;
+ bonusCandidate=null;
  document.querySelectorAll("[data-generate-setting]").forEach(b=>b.classList.toggle("selected",b.dataset.generateSetting===setting));
  const pool=shuffle(window.BUNKER_CARDS[setting].filter(g=>g.category!=="Катастрофа"&&g.category!=="Угроза"&&g.category!=="Преимущества бункера").flatMap(g=>g.items.flatMap(card=>Array.from({length:Math.max(1,card.copies||1)},(_,i)=>({...card,category:g.category,copyIndex:i+1})))));
  const needs=["Пол и возраст","Здоровье","Профессия","Хобби","Факт","Факт","Особое условие","Лёгкий багаж","Тяжёлый багаж"];
@@ -24,8 +50,30 @@ function generatePack(nextSetting){
 function renderPack(){
  const el=$("#generated-pack");
  if(!generatedPack.length){el.innerHTML='<div class="pack-placeholder"><span>▤</span><b>Ваши карты появятся здесь</b><small>Выберите один из двух сеттингов выше.</small></div>';return}
- el.innerHTML='<div class="pack-heading"><div><p class="eyebrow">ВАШ СЛУЧАЙНЫЙ НАБОР</p><h3>'+(setting==="fantasy"?"Фэнтези":"Современность")+' · '+generatedPack.length+' карт</h3></div><button class="btn btn-ghost" id="reroll-pack">Перемешать набор ↻</button></div><div class="hand-grid">'+generatedPack.map((c,i)=>'<article class="hand-card revealed"><span class="card-category">'+escapeHTML(c.category.toUpperCase())+'</span><h3>'+escapeHTML(c.title)+'</h3><p>'+escapeHTML(c.description)+'</p></article>').join("")+'</div>';
+ el.innerHTML='<div class="pack-heading"><div><p class="eyebrow">ВАШ СЛУЧАЙНЫЙ НАБОР</p><h3>'+(setting==="fantasy"?"Фэнтези":"Современность")+' · '+generatedPack.length+' карт</h3></div><button class="btn btn-ghost" id="reroll-pack">Перемешать набор ↻</button></div><div class="hand-grid">'+generatedPack.map((c,i)=>'<article class="hand-card revealed"><span class="card-category">'+escapeHTML(c.category.toUpperCase())+'</span><h3>'+escapeHTML(c.title)+'</h3><p>'+escapeHTML(c.description)+'</p>'+(c.category==="Особое условие"&&["bonus-profession","replace-profession","keep-profession","bonus-light-baggage","replace-health"].includes(c.action)?'<button class="btn btn-ghost special-action" data-special-action="'+escapeHTML(c.action)+'">'+(c.action==="bonus-profession"?"Вытянуть профессию":c.action==="replace-profession"?"Вытянуть замену профессии":c.action==="keep-profession"?"Вытянуть вторую профессию":c.action==="replace-health"?"Вытянуть замену здоровья":"Вытянуть багаж")+'</button>':'')+'</article>').join("")+'</div>'+(bonusCandidate?'<div class="bonus-choice"><p class="eyebrow">ДОПОЛНИТЕЛЬНАЯ КАРТА · ВЫБЕРИТЕ ДЕЙСТВИЕ</p><h3>'+escapeHTML(bonusCandidate.title)+'</h3><p>'+escapeHTML(bonusCandidate.description)+'</p><div class="bonus-choice-actions"><button class="btn btn-primary" id="accept-bonus">Оставить эту карту</button><button class="btn btn-ghost" id="discard-bonus">Сбросить</button></div><small>При замене прежняя карта соответствующей категории будет сброшена. При дополнительной профессии обе карты останутся в наборе.</small></div>':'');
  $("#reroll-pack").addEventListener("click",()=>generatePack(setting));
+ document.querySelectorAll(".special-action").forEach(b=>b.addEventListener("click",()=>drawBonusCard(b.dataset.specialAction)));
+ const accept=$("#accept-bonus"),discard=$("#discard-bonus");
+ if(accept)accept.addEventListener("click",acceptBonusCard);
+ if(discard)discard.addEventListener("click",()=>{bonusCandidate=null;renderPack()});
+}
+function drawBonusCard(action){
+ const category=action==="bonus-light-baggage"?"Лёгкий багаж":action==="replace-health"?"Здоровье":"Профессия";
+ const current=generatedPack.filter(c=>c.category===category);
+ const deck=makeDeck(category).filter(c=>!current.some(old=>old.title===c.title));
+ if(!deck.length){alert("В этой колоде больше нет подходящих карт.");return;}
+ bonusCandidate={...shuffle(deck)[0],bonusAction:action};
+ renderPack();
+}
+function acceptBonusCard(){
+ if(!bonusCandidate)return;
+ const action=bonusCandidate.bonusAction;
+ const category=bonusCandidate.category;
+ const replace=["replace-profession","replace-health"].includes(action);
+ if(replace){const index=generatedPack.findIndex(c=>c.category===category);if(index>=0)generatedPack.splice(index,1);}
+ generatedPack.push(bonusCandidate);
+ bonusCandidate=null;
+ renderPack();
 }
 document.querySelectorAll(".scenario-draw").forEach(b=>b.addEventListener("click",()=>drawScenario(b.dataset.scenario)));
 document.querySelectorAll(".scenario-reroll-button").forEach(b=>b.addEventListener("click",()=>rerollScenario(b.dataset.rerollScenario)));
@@ -33,7 +81,7 @@ function drawScenario(category){
  const limits={"Катастрофа":1,"Угроза":2,"Преимущества бункера":3};
  const drawn=scenarioDrawn[category];if(drawn.length>=limits[category])return;
  const group=window.BUNKER_CARDS[setting].find(g=>g.category===category);if(!group)return;
- const remaining=group.items.filter(card=>!drawn.some(x=>x.id===card.id));if(!remaining.length)return;
+ const remaining=group.items.filter(card=>!drawn.some(x=>x.title===card.title));if(!remaining.length)return;
  drawn.push(shuffle(remaining)[0]);renderScenario();
 }
 function rerollScenario(category){const drawn=scenarioDrawn[category],group=window.BUNKER_CARDS[setting].find(g=>g.category===category);if(!group||!drawn.length)return;const remaining=shuffle(group.items.filter(card=>!drawn.some(old=>old.title===card.title)));scenarioDrawn[category]=remaining.slice(0,drawn.length);renderScenario()}
