@@ -62,3 +62,7 @@
 .bonus-choice-actions{display:flex;gap:10px;flex-wrap:wrap}
 .special-action{margin-top:12px;width:100%;white-space:normal;line-height:1.35}
 @media(max-width:560px){.bonus-choice-actions{display:grid;grid-template-columns:1fr}.bonus-choice-actions .btn{width:100%}}
+
+.bonus-choice label{display:grid;gap:7px;color:var(--muted);font-size:11px;font-weight:700}
+.bonus-choice input,.bonus-choice select{width:100%;min-height:42px;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--text);padding:9px 11px}
+.bonus-choice input:focus,.bonus-choice select:focus{outline:1px solid var(--acid);border-color:var(--acid)}
