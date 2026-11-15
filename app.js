@@ -10,13 +10,13 @@ $("#show-catalog").addEventListener("click",()=>showView("catalog"));
 $("#create-room").addEventListener("click",()=>$("#generator-panel").scrollIntoView({behavior:"smooth",block:"center"}));
 document.querySelectorAll("[data-generate-setting]").forEach(b=>b.addEventListener("click",()=>generatePack(b.dataset.generateSetting)));
 function makeDeck(category){const group=window.BUNKER_CARDS[setting].find(g=>g.category===category);return group?group.items.flatMap(card=>Array.from({length:Math.max(1,card.copies||1)},(_,i)=>({...card,category,copyIndex:i+1}))):[]}
-function takeOne(pool,category){const choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category);if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
+function factConflict(a,b){const clean=s=>String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^а-яa-z0-9 ]/g," ").split(/\\s+/).filter(Boolean);const A=clean(a.title),B=clean(b.title),roots=["осад","лавин","землетряс","портал","эпидем","чум"];if(roots.some(r=>A.some(x=>x.startsWith(r))&&B.some(x=>x.startsWith(r))))return true;const stop=new Set(["однажды","когда","то","был","была","имеет","умеет","знает","пережил","пережила","в","на","из","после","во","с","и"]);const aa=new Set(A.filter(x=>x.length>3&&!stop.has(x))),bb=new Set(B.filter(x=>x.length>3&&!stop.has(x)));const common=[...aa].filter(x=>bb.has(x)).length;return common>=2&&common/Math.max(1,Math.min(aa.size,bb.size))>=0.5}function takeOne(pool,category,exclude=[]){const choices=pool.map((c,i)=>({c,i})).filter(x=>x.c.category===category&&!exclude.some(e=>category==="Факт"&&factConflict(e,x.c)));if(!choices.length)return null;const picked=choices[Math.floor(Math.random()*choices.length)];return pool.splice(picked.i,1)[0]}
 function generatePack(nextSetting){
  setting=nextSetting;
  document.querySelectorAll("[data-generate-setting]").forEach(b=>b.classList.toggle("selected",b.dataset.generateSetting===setting));
  const pool=shuffle(window.BUNKER_CARDS[setting].filter(g=>g.category!=="Катастрофа"&&g.category!=="Угроза"&&g.category!=="Преимущества бункера").flatMap(g=>g.items.flatMap(card=>Array.from({length:Math.max(1,card.copies||1)},(_,i)=>({...card,category:g.category,copyIndex:i+1})))));
  const needs=["Пол и возраст","Здоровье","Профессия","Хобби","Факт","Факт","Особое условие","Лёгкий багаж","Тяжёлый багаж"];
- generatedPack=needs.map(category=>takeOne(pool,category)).filter(Boolean);
+ generatedPack=[];for(const category of needs){const picked=takeOne(pool,category,category==="Факт"?generatedPack.filter(c=>c.category==="Факт"):[]);if(picked)generatedPack.push(picked)}
  scenarioDrawn={"Катастрофа":[],"Угроза":[],"Преимущества бункера":[]};
  renderPack();renderScenario();
  $("#generated-pack").scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -35,17 +35,17 @@ function drawScenario(category){
  const remaining=group.items.filter(card=>!drawn.some(x=>x.id===card.id));if(!remaining.length)return;
  drawn.push(shuffle(remaining)[0]);renderScenario();
 }
-function renderScenario(){
+function rerollScenario(category){const drawn=scenarioDrawn[category],group=window.BUNKER_CARDS[setting].find(g=>g.category===category);if(!group||!drawn.length)return;const remaining=shuffle(group.items.filter(card=>!drawn.some(old=>old.title===card.title)));scenarioDrawn[category]=remaining.slice(0,drawn.length);renderScenario()}\nfunction renderScenario(){
  const order=["Катастрофа","Угроза","Преимущества бункера"];
  $("#scenario-revealed").innerHTML=order.map(category=>{
   const list=scenarioDrawn[category];if(!list.length)return "";
-  return '<div class="scenario-result-group"><p class="eyebrow">'+escapeHTML(category.toUpperCase())+'</p><div class="scenario-result-grid">'+list.map(card=>{
+  return '<div class="scenario-result-group"><div class="scenario-result-heading"><p class="eyebrow">'+escapeHTML(category.toUpperCase())+'</p><button class="btn btn-ghost scenario-reroll" data-reroll-scenario="'+escapeHTML(category)+'">Перебросить ↻</button></div><div class="scenario-result-grid">'+list.map(card=>{
    const details=card.details;
    const extra=category==="Катастрофа"&&details?'<div class="catastrophe-meta"><div><small>ТИП УГРОЗЫ</small><b>'+escapeHTML(details.threatType)+'</b></div><div><small>СКОЛЬКО ПЕРЕЖДАТЬ</small><b>'+escapeHTML(details.waitDuration)+'</b></div><div class="wide"><small>КОГДА МОЖНО ВЫХОДИТЬ</small><b>'+escapeHTML(details.exitCondition)+'</b></div></div>':"";
    return '<article class="scenario-result-card"><span>'+escapeHTML(category.toUpperCase())+'</span><h3>'+escapeHTML(card.title)+'</h3><p>'+escapeHTML(card.description)+'</p>'+extra+'</article>';
   }).join("")+'</div></div>';
  }).join("")||'<p class="scenario-empty">Пока ничего не раскрыто. Нажмите кнопку нужной колоды.</p>';
- document.querySelectorAll(".scenario-draw").forEach(b=>{
+ document.querySelectorAll("[data-reroll-scenario]").forEach(b=>b.addEventListener("click",()=>rerollScenario(b.dataset.rerollScenario)));document.querySelectorAll(".scenario-draw").forEach(b=>{
   const category=b.dataset.scenario,limit={"Катастрофа":1,"Угроза":2,"Преимущества бункера":3}[category],count=scenarioDrawn[category].length;
   b.disabled=count>=limit;
   b.textContent=count>=limit?"Колода раскрыта":category==="Катастрофа"?"Открыть катастрофу":category==="Угроза"?"Показать угрозу · "+(count+1)+"/"+limit:"Показать преимущество · "+(count+1)+"/"+limit;
