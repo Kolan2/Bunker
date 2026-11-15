@@ -1,5 +1,5 @@
 const $ = (s)=>document.querySelector(s);
-const categories=["Пол и возраст","Здоровье","Профессия","Хобби","Факт","Особое условие","Лёгкий багаж","Тяжёлый багаж"];
+const categories=window.BUNKER_CARDS.modern.map(g=>g.category);
 let setting="modern", playerCount=5, players=[], hands={}, revealed={}, activeCategory="Все карты", activeView="home";
 const deck=()=>window.BUNKER_CARDS[setting].flatMap(g=>g.items.flatMap(card=>Array.from({length:card.copies},(_,i)=>({...card,category:g.category,copyIndex:i+1}))));
 const shuffle=(a)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
