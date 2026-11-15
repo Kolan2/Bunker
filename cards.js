@@ -1770,3 +1770,13 @@ for(const world of Object.keys(SPECIAL_VARIANT_PATCH)){
  for(const card of group.items){const patch=SPECIAL_VARIANT_PATCH[world][card.title];if(patch){card.title=patch[0];card.action=patch[1];card.description=patch[2];}}
 }
 
+
+for(const world of Object.keys(window.BUNKER_CARDS)){
+ const special=window.BUNKER_CARDS[world].find(g=>g.category==="Особое условие");
+ for(const card of special.items){
+  if(card.action==="bonus-profession")card.description="Ведущий вытягивает одну дополнительную карту профессии и показывает её вам. Выберите: заменить ею свою текущую профессию или оставить прежнюю; невыбранная карта сбрасывается.";
+  if(card.action==="replace-profession")card.description="Ведущий вытягивает одну дополнительную карту профессии. Вы можете заменить ею свою текущую профессию; прежняя карта сбрасывается. Если новая не подходит, оставьте прежнюю.";
+  if(card.action==="replace-health")card.description="Ведущий вытягивает одну дополнительную карту здоровья. Вы можете заменить ею свою текущую карту; прежняя сбрасывается. Если новая не подходит, оставьте прежнюю.";
+  if(card.action==="keep-profession")card.description="Ведущий вытягивает одну дополнительную карту профессии. Оставьте обе профессии в наборе и можете заявлять о любой из них; навыки требуют подходящих инструментов и обстоятельств.";
+ }
+}
