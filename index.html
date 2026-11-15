@@ -53,6 +53,16 @@
         <div class="privacy-note">◉ Карты видны только выбранному игроку на этом устройстве. Передайте телефон следующему участнику.</div>
         <div id="hand" class="hand-grid"></div>
         <div class="game-footer"><span id="hand-progress">9 КАРТ · 0 ОТКРЫТО</span><button class="btn btn-primary" id="reveal-all">Открыть все карты</button></div>
+        <section class="scenario-board">
+          <div class="section-heading"><div><p class="eyebrow">ОБЩИЕ КАРТЫ ПАРТИИ</p><h2>Условия выживания</h2></div><span class="step-count">СЦЕНАРИЙ</span></div>
+          <p class="scenario-intro">Эти карты общие для всех участников. Их открывает ведущий в нужный момент: катастрофа — в начале, угрозы — по ходу игры, преимущества — при изучении бункера.</p>
+          <div class="scenario-controls">
+            <article class="scenario-deck"><span class="scenario-icon">⚠</span><b>Катастрофа</b><small>1 карта на партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Катастрофа">Открыть событие</button></article>
+            <article class="scenario-deck"><span class="scenario-icon">☢</span><b>Угрозы</b><small>До 2 карт за партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Угроза">Открыть угрозу</button></article>
+            <article class="scenario-deck"><span class="scenario-icon">✦</span><b>Преимущества бункера</b><small>До 3 карт за партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Преимущества бункера">Открыть преимущество</button></article>
+          </div>
+          <div id="scenario-revealed" class="scenario-revealed"><p class="scenario-empty">Пока ничего не раскрыто. Ведущий может открыть карты выше.</p></div>
+        </section>
       </section>
     </section>
 
