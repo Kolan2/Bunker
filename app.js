@@ -51,10 +51,13 @@ function renderScenario(){
   b.textContent=count>=limit?"Колода раскрыта":category==="Катастрофа"?"Открыть катастрофу":category==="Угроза"?"Показать угрозу · "+(count+1)+"/"+limit:"Показать преимущество · "+(count+1)+"/"+limit;
  });
 }
-const categories=window.BUNKER_CARDS.modern.map(g=>g.category);
 let activeCategory="Все карты";
+let catalogSetting="modern";
+document.querySelectorAll("[data-catalog-setting]").forEach(b=>b.addEventListener("click",()=>{catalogSetting=b.dataset.catalogSetting;activeCategory="Все карты";document.querySelectorAll("[data-catalog-setting]").forEach(x=>x.classList.toggle("selected",x===b));renderCatalog()}));
 function renderCatalog(){
- const groups=window.BUNKER_CARDS[$("#catalog-setting").value];
+ const groups=window.BUNKER_CARDS[catalogSetting];
+ const categories=groups.map(g=>g.category);
+ if(activeCategory!=="Все карты"&&!categories.includes(activeCategory))activeCategory="Все карты";
  const all=groups.flatMap(g=>g.items.map(c=>({...c,category:g.category})));
  $("#catalog-count").textContent=all.length;
  const tabs=["Все карты",...categories];
@@ -62,8 +65,7 @@ function renderCatalog(){
  $("#category-tabs").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{activeCategory=b.dataset.cat;renderCatalog()}));
  const q=$("#card-search").value.toLowerCase().trim();
  const shown=all.filter(c=>(activeCategory==="Все карты"||c.category===activeCategory)&&(!q||(c.title+" "+c.description+" "+c.category).toLowerCase().includes(q)));
- $("#catalog-grid").innerHTML=shown.map(c=>'<article class="catalog-card"><div class="catalog-card-top"><span class="tag">'+escapeHTML(c.category.toUpperCase())+'</span><span class="copies">КОПИЙ: '+c.copies+'</span></div><h3>'+escapeHTML(c.title)+'</h3><p>'+escapeHTML(c.description)+'</p></article>').join("")||'<p class="catalog-footnote">По вашему запросу ничего не найдено.</p>';
+ $("#catalog-grid").innerHTML=shown.map(c=>'<article class="catalog-card"><div class="catalog-card-top"><span class="tag">'+escapeHTML(c.category.toUpperCase())+'</span><span class="copies">КОПИЙ: '+c.copies+'</span></div><h3>'+escapeHTML(c.title)+'</h3><p>'+escapeHTML(c.description)+'</p>'+(c.details?'<div class="catalog-card-details"><b>Тип угрозы:</b> '+escapeHTML(c.details.threatType)+'<br><b>Срок:</b> '+escapeHTML(c.details.waitDuration)+'<br><b>Выход:</b> '+escapeHTML(c.details.exitCondition)+'</div>':'')+'</article>').join("")||'<p class="catalog-footnote">По вашему запросу ничего не найдено.</p>';
 }
-$("#catalog-setting").addEventListener("change",()=>{activeCategory="Все карты";renderCatalog()});
 $("#card-search").addEventListener("input",renderCatalog);
 renderCatalog();
