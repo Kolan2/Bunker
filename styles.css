@@ -52,3 +52,5 @@
 .catalog-card-details{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)}
 .catalog-card-details b{color:var(--acid);font-weight:700}
 @media(max-width:760px){.catalog-world-picker{grid-template-columns:1fr 1fr}.catalog-world-option{font-size:10px;padding:0 6px}}
+
+.scenario-result-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.scenario-result-heading .eyebrow{margin:0}.scenario-reroll{padding:8px 12px;font-size:9px}@media(max-width:760px){.scenario-result-heading{align-items:stretch;flex-direction:column}.scenario-reroll{width:100%}}
