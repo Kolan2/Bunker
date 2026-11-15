@@ -41,3 +41,14 @@
 .catastrophe-meta small{font:600 7px Unbounded;color:var(--acid);letter-spacing:.1em;margin-bottom:6px}
 .catastrophe-meta b{font-size:9px;line-height:1.55;font-weight:600;color:var(--text)}
 @media(max-width:760px){.generator-panel{padding:34px 0}.generator-settings{grid-template-columns:1fr}.generator-settings .setting-option{min-height:90px}.pack-heading{align-items:flex-start;flex-direction:column}.pack-heading .btn{width:100%}.catastrophe-meta{grid-template-columns:1fr}.catastrophe-meta .wide{grid-column:auto}}
+
+/* Bigger catalogue and explicit world switch */
+.catalog-world-picker{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.catalog-world-option{min-height:46px;padding:0 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-size:11px;font-weight:800;cursor:pointer}
+.catalog-world-option.selected{border-color:var(--acid);background:#c9e66b12;color:var(--acid)}
+.catalog-card{min-height:0}
+.catalog-card p{font-size:11px;line-height:1.75;color:#c0c0ad}
+.hand-card p{font-size:11px;line-height:1.75;color:#c0c0ad}
+.catalog-card-details{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--muted)}
+.catalog-card-details b{color:var(--acid);font-weight:700}
+@media(max-width:760px){.catalog-world-picker{grid-template-columns:1fr 1fr}.catalog-world-option{font-size:10px;padding:0 6px}}
