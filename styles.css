@@ -55,3 +55,10 @@
 
 .scenario-result-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.scenario-result-heading .eyebrow{margin:0}.scenario-reroll{padding:8px 12px;font-size:9px}@media(max-width:760px){.scenario-result-heading{align-items:stretch;flex-direction:column}.scenario-reroll{width:100%}}
 .scenario-reroll-button{width:100%;margin-top:2px;padding:10px 8px;font-size:10px}.scenario-reroll-button:disabled{opacity:.35;cursor:not-allowed}
+.bonus-choice{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);display:grid;gap:10px}
+.bonus-choice h3{margin:0;font-family:var(--display);font-size:21px}
+.bonus-choice p{margin:0;color:var(--muted);line-height:1.6}
+.bonus-choice small{color:var(--muted);line-height:1.5}
+.bonus-choice-actions{display:flex;gap:10px;flex-wrap:wrap}
+.special-action{margin-top:12px;width:100%;white-space:normal;line-height:1.35}
+@media(max-width:560px){.bonus-choice-actions{display:grid;grid-template-columns:1fr}.bonus-choice-actions .btn{width:100%}}
