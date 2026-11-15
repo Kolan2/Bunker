@@ -31,38 +31,26 @@
         <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="vault"><div class="vault-ring"></div><div class="vault-core">B<span>•</span></div><div class="vault-label">УРОВЕНЬ<br>ДОСТУПА 05</div></div><div class="art-stamp">NO<br>EXIT</div></div>
       </div>
 
-      <section class="setup-panel" id="setup-panel">
-        <div class="section-heading"><div><p class="eyebrow">НОВАЯ ПАРТИЯ</p><h2>Настройка убежища</h2></div><span class="step-count">01 / 03</span></div>
-        <div class="setup-grid">
-          <div class="field-group"><label>СЕТТИНГ</label><div class="setting-switch"><button class="setting-option selected" data-setting="modern"><span>◈</span><b>Современность</b><small>Наш мир и близкое будущее</small></button><button class="setting-option" data-setting="fantasy"><span>✧</span><b>Фэнтези</b><small>Магия, монстры и королевства</small></button></div></div>
-          <div class="field-group"><label>ИГРОКОВ</label><div class="player-count"><button id="players-minus" aria-label="Уменьшить">−</button><strong id="player-count">5</strong><button id="players-plus" aria-label="Увеличить">+</button></div><p class="field-hint">От 3 до 5 участников</p></div>
-          <div class="field-group"><label>ИМЯ ВЕДУЩЕГО</label><input id="host-name" maxlength="20" placeholder="Например, Алексей" value="Ведущий"></div>
+      <section class="generator-panel" id="generator-panel">
+        <div class="section-heading"><div><p class="eyebrow">НОВАЯ ПАРТИЯ</p><h2>Выберите свой мир</h2></div><span class="step-count">01 / 01</span></div>
+        <p class="generator-intro">Нажмите на сеттинг — и получите случайный набор из девяти карт. Каждое нажатие создаёт новую комбинацию.</p>
+        <div class="setting-switch generator-settings">
+          <button class="setting-option selected" data-generate-setting="modern"><span>◈</span><b>Современность</b><small>Наш мир и близкое будущее</small><i>Сгенерировать набор →</i></button>
+          <button class="setting-option" data-generate-setting="fantasy"><span>✧</span><b>Фэнтези</b><small>Магия, монстры и королевства</small><i>Сгенерировать набор →</i></button>
         </div>
-        <div class="setup-bottom"><div class="deck-note"><span class="note-icon">▤</span><span><b>9 карт каждому игроку</b><small>Пол и возраст · Здоровье · Профессия · Хобби · 2 факта · Особое условие · 2 вида багажа</small></span></div><button class="btn btn-primary" id="start-game">Подготовить раздачу <span>→</span></button></div>
-      </section>
-
-      <section class="room-panel hidden" id="room-panel">
-        <div class="section-heading"><div><p class="eyebrow">КОМНАТА СОЗДАНА</p><h2>Подготовка участников</h2></div><span class="room-code" id="room-code">-----</span></div>
-        <p class="room-description">Это демонстрационный режим на одном устройстве. Каждый участник может по очереди открыть свой набор. Для игры с разных телефонов подключим серверную комнату.</p>
-        <div id="players-list" class="players-list"></div>
-        <div class="room-actions"><button class="btn btn-ghost" id="reset-room">← Изменить настройки</button><button class="btn btn-primary" id="deal-cards">Раздать карты <span>→</span></button></div>
-      </section>
-
-      <section class="game-panel hidden" id="game-panel">
-        <div class="game-top"><div><p class="eyebrow">ВАШИ СЕКРЕТЫ</p><h2 id="game-title">Карты игрока</h2></div><div class="game-player-select"><label for="current-player">СМОТРИТ ИГРОК</label><select id="current-player"></select></div></div>
-        <div class="privacy-note">◉ Карты видны только выбранному игроку на этом устройстве. Передайте телефон следующему участнику.</div>
-        <div id="hand" class="hand-grid"></div>
-        <div class="game-footer"><span id="hand-progress">9 КАРТ · 0 ОТКРЫТО</span><button class="btn btn-primary" id="reveal-all">Открыть все карты</button></div>
-        <section class="scenario-board">
-          <div class="section-heading"><div><p class="eyebrow">ОБЩИЕ КАРТЫ ПАРТИИ</p><h2>Условия выживания</h2></div><span class="step-count">СЦЕНАРИЙ</span></div>
-          <p class="scenario-intro">Эти карты общие для всех участников. Их открывает ведущий в нужный момент: катастрофа — в начале, угрозы — по ходу игры, преимущества — при изучении бункера.</p>
+        <div id="generated-pack" class="generated-pack">
+          <div class="pack-placeholder"><span>▤</span><b>Ваши карты появятся здесь</b><small>Выберите один из двух сеттингов выше.</small></div>
+        </div>
+        <div class="scenario-board generator-scenario">
+          <div class="section-heading"><div><p class="eyebrow">ОБЩИЕ СОБЫТИЯ</p><h2>Мир за стенами</h2></div><span class="step-count">ДЛЯ ВСЕХ</span></div>
+          <p class="scenario-intro">Эти карты ведущий открывает отдельно от личных наборов. Катастрофа задаёт причину эвакуации и срок изоляции; угрозы усложняют жизнь внутри, а преимущества показывают, чем оснащён бункер.</p>
           <div class="scenario-controls">
-            <article class="scenario-deck"><span class="scenario-icon">⚠</span><b>Катастрофа</b><small>1 карта на партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Катастрофа">Открыть событие</button></article>
-            <article class="scenario-deck"><span class="scenario-icon">☢</span><b>Угрозы</b><small>До 2 карт за партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Угроза">Открыть угрозу</button></article>
-            <article class="scenario-deck"><span class="scenario-icon">✦</span><b>Преимущества бункера</b><small>До 3 карт за партию</small><button class="btn btn-ghost scenario-draw" data-scenario="Преимущества бункера">Открыть преимущество</button></article>
+            <article class="scenario-deck"><span class="scenario-icon">⚠</span><b>Катастрофа</b><small>Главное событие и срок ожидания</small><button class="btn btn-ghost scenario-draw" data-scenario="Катастрофа">Открыть катастрофу</button></article>
+            <article class="scenario-deck"><span class="scenario-icon">☢</span><b>Угрозы</b><small>Случайные осложнения внутри и снаружи</small><button class="btn btn-ghost scenario-draw" data-scenario="Угроза">Показать угрозу</button></article>
+            <article class="scenario-deck"><span class="scenario-icon">✦</span><b>Бункер</b><small>Инфраструктура, запасы и оборудование</small><button class="btn btn-ghost scenario-draw" data-scenario="Преимущества бункера">Показать преимущество</button></article>
           </div>
-          <div id="scenario-revealed" class="scenario-revealed"><p class="scenario-empty">Пока ничего не раскрыто. Ведущий может открыть карты выше.</p></div>
-        </section>
+          <div id="scenario-revealed" class="scenario-revealed"><p class="scenario-empty">Пока ничего не раскрыто. Нажмите кнопку нужной колоды.</p></div>
+        </div>
       </section>
     </section>
 
