@@ -69,7 +69,8 @@ function confirmBaggageTransfer(){
  if(!title){alert("Введите точное название карты соперника.");return;}
  if(transferMode==="swap-baggage"||transferMode==="swap-profession"){
   const ownTitle=$("#transfer-own")?.value;
-  if(!ownTitle){alert("В вашем наборе нет карты багажа для обмена.");return;}
+  if(!ownTitle){alert("В вашем наборе нет карты для обмена.");return;}
+  if(ownTitle===title){alert("Нельзя обменять карту на такую же карту.");return;}
   const ownCategory=transferMode==="swap-profession"?"Профессия":null;
   const index=generatedPack.findIndex(c=>c.title===ownTitle&&(ownCategory?c.category===ownCategory:["Лёгкий багаж","Тяжёлый багаж"].includes(c.category)));
   if(index<0){alert("Не удалось найти вашу карту для обмена.");return;}
@@ -81,6 +82,7 @@ function confirmBaggageTransfer(){
  transferMode=null;renderPack();
 }
 function drawBonusCard(action){
+ transferMode=null;
  const category=action==="bonus-light-baggage"?"Лёгкий багаж":action==="replace-health"?"Здоровье":"Профессия";
  const current=generatedPack.filter(c=>c.category===category);
  const deck=makeDeck(category).filter(c=>!current.some(old=>old.title===c.title));
